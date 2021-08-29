@@ -16,11 +16,14 @@ variable "region" {
 }
 
 variable "resource_group_name" {
-  type    = string
-  default = "silvios-demo"
+  type = string
 }
 
 variable "storage_account_name" {
-  type    = string
-  default = "silviosdemo"
+  type = string
+}
+
+variable "platform_output_directory" {
+  type        = string
+  description = "Platform Initialization Output Directory"
 }

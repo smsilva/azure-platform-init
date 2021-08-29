@@ -1,4 +1,4 @@
-module "backend" {
+module "backend_storage" {
   source = "../modules/storage-account"
 
   region               = var.region
@@ -6,19 +6,19 @@ module "backend" {
   storage_account_name = var.storage_account_name
 }
 
-data "template_file" "backend" {
-  template = file("${path.module}/../templates/backend.conf")
+module "terraform_backend_file" {
+  source = "../modules/backend-template"
 
-  vars = {
-    backend_resource_group_name  = module.backend.resource_group.name
-    backend_storage_account_name = module.backend.storage_account.name
-    backend_container_name       = module.backend.storage_container.name
-    backend_key                  = "platform.tfstate.json"
-  }
+  backend            = module.backend_storage
+  key                = "foundation/state.json"
+  template_file_name = "${path.module}/../templates/backend.conf"
+  output_file_name   = "${var.platform_output_directory}/backend.conf"
 }
 
-resource "local_file" "backend" {
-  content         = data.template_file.backend.rendered
-  filename        = "${path.module}/../output/backend.conf"
-  file_permission = "0644"
+data "azurerm_resource_group" "foundation" {
+  name = var.resource_group_name
+
+  depends_on = [
+    module.backend_storage
+  ]
 }

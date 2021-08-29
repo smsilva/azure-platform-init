@@ -30,3 +30,6 @@ override.tf.json
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
 /output/
+
+# This file will be generated automatically
+/src/terraform.auto.tfvars
