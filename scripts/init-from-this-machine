@@ -3,8 +3,12 @@
 set -e
 
 COMPANY_NAME="${1-silvios}"
-PLATFORM_NAME="${2-bacurau}"
+PLATFORM_NAME="${2}"
 PLATFORM_FOUNDATION_REGION="${3-centralus}"
+
+if [ -z "${PLATFORM_NAME}" ]; then
+  PLATFORM_NAME="$(get-a-random-animal-name)"
+fi
 
 SOURCE_FOLDER="src"
 TEMPLATES_FOLDER="templates"

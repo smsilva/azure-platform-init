@@ -7,10 +7,8 @@
 - Storage Container
 
 ```bash
-COMPANY_NAME="silvios"
-PLATFORM_NAME="coala"
 export PATH=${PWD}/scripts:${PATH}
-init-from-this-machine ${COMPANY_NAME?} ${PLATFORM_NAME?}
+init-from-this-machine ${COMPANY_NAME} ${PLATFORM_NAME}
 ```
 
 ## Importing Already Created Resources if needed

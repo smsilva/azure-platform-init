@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ANIMAL_NAME=$(shuf -n 1 resources/animals.txt | tr "[:upper:]" "[:lower:]" | tr " " "_")
+
+echo "${ANIMAL_NAME}"
