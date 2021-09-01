@@ -27,3 +27,9 @@ variable "platform_output_directory" {
   type        = string
   description = "Platform Initialization Output Directory"
 }
+
+variable "azure_devops_service_principal" {
+  type        = string
+  description = "AzureDevOps Service Principal"
+  default     = "01ddf773-9cdc-48d7-b42d-3597ce153730"
+}
