@@ -4,14 +4,19 @@ set -e
 
 COMPANY_NAME="${1-silvios}"
 PLATFORM_NAME="${2-bacurau}"
+PLATFORM_FOUNDATION_REGION="${3-centralus}"
 
 SOURCE_FOLDER="src"
 TEMPLATES_FOLDER="templates"
 
 SCRIPTS_DIRECTORY="$(dirname "${0}")"
 
+export COMPANY_NAME
+export PLATFORM_NAME
 export SCRIPTS_DIRECTORY
-export AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER="${SCRIPTS_DIRECTORY}/../../azure-platform-foundation/src"
+export PLATFORM_FOUNDATION_REGION
+export AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER="${SCRIPTS_DIRECTORY}/../../azure-platform-foundation"
+export AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER="${AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER}/src"
 export OUTPUT_FOLDER="${HOME}/.azure/${COMPANY_NAME?}/${PLATFORM_NAME?}"
 export RESOURCE_GROUP_NAME="${PLATFORM_NAME?}-foundation"
 export STORAGE_ACCOUNT_NAME="${COMPANY_NAME?}${PLATFORM_NAME?}" # This name must be unique within Azure Globally and needs to use only alphanumeric characters
@@ -21,7 +26,7 @@ mkdir -p "${OUTPUT_FOLDER?}"
 envsubst < "${TEMPLATES_FOLDER}/terraform.auto.tfvars" > "${SOURCE_FOLDER}/terraform.auto.tfvars"
 
 terraform -chdir=src init -reconfigure
-terraform -chdir=src apply -auto-approve
+terraform -chdir=src apply
 
 # Retrieve Storage Account Name and Primary Access Key
 export ARM_STORAGE_ACCOUNT_NAME=$(            terraform -chdir=${SOURCE_FOLDER} output --raw platform_storage_account_name)
@@ -47,9 +52,11 @@ terraform -chdir="${OUTPUT_FOLDER?}" init -backend-config="${PLATFORM_BACKEND_FI
 cp "${OUTPUT_FOLDER?}/backend.conf" "${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/"
 cp "${OUTPUT_FOLDER?}/provider.tf" "${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/"
 
+envsubst < "${AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER?}/templates/terraform.auto.tfvars" > "${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/terraform.auto.tfvars"
+
 terraform \
   -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}" init \
   -backend-config="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/backend.conf" \
   -reconfigure
 
-terraform -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}" apply -auto-approve
+terraform -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}" apply

@@ -8,7 +8,7 @@
 
 ```bash
 COMPANY_NAME="silvios"
-PLATFORM_NAME="bacurau"
+PLATFORM_NAME="coala"
 export PATH=${PWD}/scripts:${PATH}
 init-from-this-machine ${COMPANY_NAME?} ${PLATFORM_NAME?}
 ```
