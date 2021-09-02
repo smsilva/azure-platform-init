@@ -1,5 +1,7 @@
 #!/bin/bash
 
-ANIMAL_NAME=$(shuf -n 1 resources/animals.txt | tr "[:upper:]" "[:lower:]" | tr " " "_")
+SCRIPTS_DIRECTORY="$(dirname "${0}")"
+ANIMALS_FILE="${SCRIPTS_DIRECTORY}/../resources/animals.txt"
+ANIMAL_NAME=$(shuf -n 1 "${ANIMALS_FILE}" | tr "[:upper:]" "[:lower:]" | tr -d " ")
 
 echo "${ANIMAL_NAME}"

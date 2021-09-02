@@ -7,8 +7,7 @@
 - Storage Container
 
 ```bash
-export PATH=${PWD}/scripts:${PATH}
-init-from-this-machine ${COMPANY_NAME} ${PLATFORM_NAME}
+init-from-this-machine silvios mink
 ```
 
 ## Importing Already Created Resources if needed
