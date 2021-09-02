@@ -8,13 +8,8 @@ variable "platform_name" {
   type        = string
 }
 
-variable "region" {
+variable "platform_region" {
   description = "Region to Create Platform Foundation Resources"
   type        = string
   default     = "centralus"
-}
-
-variable "platform_output_directory" {
-  description = "Platform Initialization Output Directory"
-  type        = string
 }

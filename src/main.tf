@@ -8,7 +8,7 @@ locals {
 
 resource "azurerm_resource_group" "foundation" {
   name     = local.resource_group_name
-  location = var.region
+  location = var.platform_region
 }
 
 module "vault" {
@@ -24,7 +24,7 @@ module "vault" {
 module "backend_storage" {
   source = "../modules/storage-account"
 
-  region               = var.region
+  region               = var.platform_region
   resource_group_name  = local.resource_group_name
   storage_account_name = local.storage_account_name
   key_vault_id         = module.vault.id
