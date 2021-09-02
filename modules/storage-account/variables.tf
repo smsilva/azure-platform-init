@@ -17,3 +17,7 @@ variable "container_name" {
   type    = string
   default = "terraform"
 }
+
+variable "key_vault_id" {
+  type = string
+}
