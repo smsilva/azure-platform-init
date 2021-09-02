@@ -32,82 +32,88 @@ resource "azurerm_key_vault" "foundation" {
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   sku_name                   = "standard"
   soft_delete_retention_days = 7
+  purge_protection_enabled   = true
+  access_policy              = []
 }
 
-//resource "azurerm_key_vault_access_policy" "foundation_terraform" {
-//  key_vault_id = azurerm_key_vault.foundation.id
-//  tenant_id    = data.azurerm_client_config.current.tenant_id
-//  object_id    = data.azurerm_client_config.current.object_id
-//
-//  certificate_permissions = [
-//    "Backup",
-//    "Create",
-//    "Delete",
-//    "DeleteIssuers",
-//    "Get",
-//    "GetIssuers",
-//    "Import",
-//    "List",
-//    "ListIssuers",
-//    "ManageContacts",
-//    "ManageIssuers",
-//    "Purge",
-//    "Recover",
-//    "Restore",
-//    "SetIssuers",
-//    "Update",
-//  ]
-//
-//  key_permissions = [
-//    "Backup",
-//    "Create",
-//    "Decrypt",
-//    "Delete",
-//    "Encrypt",
-//    "Get",
-//    "Import",
-//    "List",
-//    "Purge",
-//    "Recover",
-//    "Restore",
-//    "Sign",
-//    "UnwrapKey",
-//    "Update",
-//    "Verify",
-//    "WrapKey",
-//  ]
-//
-//  secret_permissions = [
-//    "Backup",
-//    "Delete",
-//    "Get",
-//    "List",
-//    "Purge",
-//    "Recover",
-//    "Restore",
-//    "Set",
-//  ]
-//}
+resource "azurerm_key_vault_access_policy" "foundation_terraform_service_principal" {
+  key_vault_id = azurerm_key_vault.foundation.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
 
-//resource "azurerm_key_vault_access_policy" "foundation_azure_devops" {
-//  key_vault_id = azurerm_key_vault.foundation.id
-//  tenant_id    = data.azurerm_client_config.current.tenant_id
-//  object_id    = var.azure_devops_service_principal
-//
-//  key_permissions = [
-//    "List",
-//    "Get",
-//  ]
-//
-//  secret_permissions = [
-//    "List",
-//    "Set",
-//    "Get"
-//  ]
-//}
+  certificate_permissions = [
+    "Backup",
+    "Create",
+    "Delete",
+    "DeleteIssuers",
+    "Get",
+    "GetIssuers",
+    "Import",
+    "List",
+    "ListIssuers",
+    "ManageContacts",
+    "ManageIssuers",
+    "Purge",
+    "Recover",
+    "Restore",
+    "SetIssuers",
+    "Update",
+  ]
 
-//resource "azurerm_key_vault_secret" "foundation_storage_account" {
-//  key_vault_id = azurerm_key_vault.foundation.id
-//  name         = "${var.key_vault_name}-sa-primary-acces-key"
-//  value        = module.backend_storage.storage_account.primary_access_key
-//}
+  key_permissions = [
+    "Backup",
+    "Create",
+    "Decrypt",
+    "Delete",
+    "Encrypt",
+    "Get",
+    "Import",
+    "List",
+    "Purge",
+    "Recover",
+    "Restore",
+    "Sign",
+    "UnwrapKey",
+    "Update",
+    "Verify",
+    "WrapKey",
+  ]
+
+  secret_permissions = [
+    "Backup",
+    "Delete",
+    "Get",
+    "List",
+    "Purge",
+    "Recover",
+    "Restore",
+    "Set",
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "foundation_azure_devops" {
+  key_vault_id = azurerm_key_vault.foundation.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = var.azure_devops_service_principal
+
+  key_permissions = [
+    "List",
+    "Get",
+  ]
+
+  secret_permissions = [
+    "List",
+    "Set",
+    "Get"
+  ]
+}
+
+resource "azurerm_key_vault_secret" "foundation_storage_account" {
+  key_vault_id = azurerm_key_vault.foundation.id
+  name         = "${var.key_vault_name}-primary-acces-key"
+  value        = module.backend_storage.storage_account.primary_access_key
+
+  depends_on = [
+    azurerm_key_vault_access_policy.foundation_terraform_service_principal
+  ]
+}
