@@ -7,7 +7,7 @@
 - Storage Container
 
 ```bash
-azure-platform-init/scripts/init-from-this-machine silvios iguana
+azure-platform-init/scripts/init-from-this-machine silvios teju
 ```
 
 ## Importing Already Created Resources if needed
