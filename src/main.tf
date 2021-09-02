@@ -3,10 +3,6 @@ data "azurerm_client_config" "current" {}
 resource "azurerm_resource_group" "foundation" {
   name     = var.resource_group_name
   location = var.region
-
-  tags = {
-    foundation = true
-  }
 }
 
 module "vault" {
@@ -14,6 +10,10 @@ module "vault" {
 
   name           = var.key_vault_name
   resource_group = azurerm_resource_group.foundation
+
+  depends_on = [
+    azurerm_resource_group.foundation
+  ]
 }
 
 module "backend_storage" {

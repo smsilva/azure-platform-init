@@ -1,29 +1,28 @@
-variable "name" {
-  type = string
-  description = "Azure Key Vault Name"
-}
-
-variable "resource_group" {
-  type = object({
-    name     = string
-    location = string
-  })
-}
-
-locals {
-
-}
-
 data "azurerm_client_config" "current" {}
 
+resource "random_string" "key_vault_id" {
+  keepers = {
+    name = var.name
+  }
+
+  length      = 3
+  min_numeric = 1
+  special     = false
+  upper       = false
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
 resource "azurerm_key_vault" "default" {
-  name                       = var.name
+  name                       = "${var.name}${random_string.key_vault_id.result}"
   location                   = var.resource_group.location
   resource_group_name        = var.resource_group.name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   sku_name                   = "standard"
   soft_delete_retention_days = 7
-  purge_protection_enabled   = true
+  purge_protection_enabled   = false # Should we change this to not allow a key vault be purged before retention period
   access_policy              = []
 }
 
@@ -80,12 +79,4 @@ resource "azurerm_key_vault_access_policy" "foundation_terraform_service_princip
     "Restore",
     "Set",
   ]
-}
-
-output "id" {
-  value = azurerm_key_vault.default.id
-}
-
-output "instance" {
-  value = azurerm_key_vault.default
 }
