@@ -7,8 +7,9 @@ PLATFORM_NAME="${2}"
 PLATFORM_REGION="${3-centralus}"
 
 SCRIPTS_DIRECTORY="$(dirname "${0}")"
-SOURCE_FOLDER="${SCRIPTS_DIRECTORY}/../src"
-TEMPLATES_FOLDER="${SCRIPTS_DIRECTORY}/../templates"
+SOURCE_DIRECTORY="${SCRIPTS_DIRECTORY}/../src"
+TEMPLATES_DIRECTORY="${SCRIPTS_DIRECTORY}/../templates"
+CREDENTIALS_DIRECTORY="${HOME}/.azure/${COMPANY_NAME}/${PLATFORM_NAME}" && mkdir -p "${CREDENTIALS_DIRECTORY?}"
 
 export PATH=${SCRIPTS_DIRECTORY}:${PATH}
 
@@ -21,48 +22,48 @@ fi
 export COMPANY_NAME
 export PLATFORM_NAME
 export PLATFORM_REGION
-export SOURCE_FOLDER
+export SOURCE_DIRECTORY
 export SCRIPTS_DIRECTORY
 
-AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER="${PWD}/${SCRIPTS_DIRECTORY}/../../azure-platform-foundation"
-AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER="${AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER}/src"
-PLATFORM_BACKEND_FILE_NAME="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/backend.conf"
-PLATFORM_STORAGE_ACCOUNT_CREDENTIALS="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER?}/credentials.conf"
-PLATFORM_PROVIDER_FILE_NAME="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER?}/provider.tf"
+AZURE_PLATFORM_FOUNDATION_ROOT_DIRECTORY="${PWD}/${SCRIPTS_DIRECTORY}/../../azure-platform-foundation"
+AZURE_PLATFORM_FOUNDATION_SOURCE_DIRECTORY="${AZURE_PLATFORM_FOUNDATION_ROOT_DIRECTORY}/src"
+PLATFORM_BACKEND_FILE_NAME="${AZURE_PLATFORM_FOUNDATION_SOURCE_DIRECTORY}/backend.conf"
+PLATFORM_STORAGE_ACCOUNT_CREDENTIALS="${CREDENTIALS_DIRECTORY?}/credentials.conf"
+PLATFORM_PROVIDER_FILE_NAME="${AZURE_PLATFORM_FOUNDATION_SOURCE_DIRECTORY?}/provider.tf"
 
-export AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER
-export AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER
+export AZURE_PLATFORM_FOUNDATION_ROOT_DIRECTORY
+export AZURE_PLATFORM_FOUNDATION_SOURCE_DIRECTORY
 export PLATFORM_BACKEND_FILE_NAME
 export PLATFORM_STORAGE_ACCOUNT_CREDENTIALS
 export PLATFORM_PROVIDER_FILE_NAME
 
 show-platform-initialization-info
 
-envsubst < "${TEMPLATES_FOLDER}/terraform.auto.tfvars.tpl" > "${SOURCE_FOLDER}/terraform.auto.tfvars"
+envsubst < "${TEMPLATES_DIRECTORY}/terraform.auto.tfvars.tpl" > "${SOURCE_DIRECTORY}/terraform.auto.tfvars"
 
 terraform \
-  -chdir="${SOURCE_FOLDER}" init \
+  -chdir="${SOURCE_DIRECTORY}" init \
   -reconfigure
 
 terraform \
-  -chdir="${SOURCE_FOLDER}" apply \
+  -chdir="${SOURCE_DIRECTORY}" apply \
   -auto-approve
 
 # Retrieve Output Values
-PLATFORM_RESOURCE_GROUP_NAME=$(               terraform -chdir="${SOURCE_FOLDER}" output --raw platform_resource_group_name)
-PLATFORM_STORAGE_ACCOUNT_NAME=$(              terraform -chdir="${SOURCE_FOLDER}" output --raw platform_storage_account_name)
-PLATFORM_STORAGE_ACCOUNT_CONTAINER_NAME=$(    terraform -chdir="${SOURCE_FOLDER}" output --raw platform_storage_account_container_name)
-PLATFORM_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY=$(terraform -chdir="${SOURCE_FOLDER}" output --raw platform_storage_account_primary_access_key)
+PLATFORM_RESOURCE_GROUP_NAME=$(               terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_resource_group_name)
+PLATFORM_STORAGE_ACCOUNT_NAME=$(              terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_storage_account_name)
+PLATFORM_STORAGE_ACCOUNT_CONTAINER_NAME=$(    terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_storage_account_container_name)
+PLATFORM_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY=$(terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_storage_account_primary_access_key)
 export PLATFORM_RESOURCE_GROUP_NAME
 export PLATFORM_STORAGE_ACCOUNT_NAME
 export PLATFORM_STORAGE_ACCOUNT_CONTAINER_NAME
 export PLATFORM_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY
-envsubst < "${TEMPLATES_FOLDER}/credentials.conf" > "${PLATFORM_STORAGE_ACCOUNT_CREDENTIALS?}"
-envsubst < "${TEMPLATES_FOLDER}/backend.conf" > "${PLATFORM_BACKEND_FILE_NAME?}"
-envsubst < "${AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER?}/templates/terraform.auto.tfvars.tpl" > "${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/terraform.auto.tfvars"
+envsubst < "${TEMPLATES_DIRECTORY}/credentials.conf" > "${PLATFORM_STORAGE_ACCOUNT_CREDENTIALS?}"
+envsubst < "${TEMPLATES_DIRECTORY}/backend.conf" > "${PLATFORM_BACKEND_FILE_NAME?}"
+envsubst < "${AZURE_PLATFORM_FOUNDATION_ROOT_DIRECTORY?}/templates/terraform.auto.tfvars.tpl" > "${AZURE_PLATFORM_FOUNDATION_SOURCE_DIRECTORY}/terraform.auto.tfvars"
 
-# Change Backend from local to azurerm and copy to output folder
-sed '/backend.*local/ s/local/azurerm/' "${SOURCE_FOLDER}/provider.tf" > "${PLATFORM_PROVIDER_FILE_NAME?}"
+# Change Backend from local to azurerm and copy to output directory
+sed '/backend.*local/ s/local/azurerm/' "${SOURCE_DIRECTORY}/provider.tf" > "${PLATFORM_PROVIDER_FILE_NAME?}"
 
 show-platform-foundation-info
 
@@ -73,10 +74,10 @@ source "${PLATFORM_STORAGE_ACCOUNT_CREDENTIALS?}"
 
 # Inititalize Foundation Remote Backend
 terraform \
-  -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}" init \
+  -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_DIRECTORY}" init \
   -backend-config="${PLATFORM_BACKEND_FILE_NAME?}" \
   -reconfigure
 
 terraform \
-  -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}" apply \
+  -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_DIRECTORY}" apply \
   -auto-approve
