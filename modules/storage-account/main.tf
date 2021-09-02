@@ -1,5 +1,20 @@
+resource "random_string" "storage_account_id" {
+  keepers = {
+    name = var.storage_account_name
+  }
+
+  length      = 3
+  min_numeric = 1
+  special     = false
+  upper       = false
+
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
 resource "azurerm_storage_account" "default" {
-  name                     = var.storage_account_name
+  name                     = "${var.storage_account_name}${random_string.storage_account_id.result}"
   resource_group_name      = var.resource_group_name
   location                 = var.region
   account_tier             = "Standard"
@@ -18,7 +33,7 @@ resource "azurerm_storage_container" "default" {
 
 resource "azurerm_key_vault_secret" "foundation_storage_account" {
   key_vault_id = var.key_vault_id
-  name         = "${var.storage_account_name}-primary-acces-key"
+  name         = "${azurerm_storage_account.default.name}-primary-acces-key"
   value        = azurerm_storage_account.default.primary_access_key
 
   depends_on = [

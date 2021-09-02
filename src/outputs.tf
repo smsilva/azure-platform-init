@@ -16,9 +16,9 @@ output "platform_storage_account_primary_access_key" {
 }
 
 output "platform_generated_config_file_directory" {
-  value = var.platform_output_directory
+  value = local.output_directory
 }
 
 output "platform_storage_account_credentials" {
-  value = "${var.platform_output_directory}/credentials.conf"
+  value = "${local.output_directory}/credentials.conf"
 }

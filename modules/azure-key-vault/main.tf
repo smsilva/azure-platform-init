@@ -9,10 +9,6 @@ resource "random_string" "key_vault_id" {
   min_numeric = 1
   special     = false
   upper       = false
-
-  lifecycle {
-    prevent_destroy = false
-  }
 }
 
 resource "azurerm_key_vault" "default" {
@@ -23,7 +19,6 @@ resource "azurerm_key_vault" "default" {
   sku_name                   = "standard"
   soft_delete_retention_days = 7
   purge_protection_enabled   = false # Should we change this to not allow a key vault be purged before retention period
-  access_policy              = []
 }
 
 resource "azurerm_key_vault_access_policy" "foundation_terraform_service_principal" {

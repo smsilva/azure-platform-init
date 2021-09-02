@@ -33,3 +33,4 @@ override.tf.json
 
 # This file will be generated automatically
 /src/terraform.auto.tfvars
+**/.azure/*

@@ -1,39 +1,20 @@
-variable "subscription_id" {
+variable "company_name" {
+  description = "Company Name that will be used to name foundation things like Storage Account and Key Vault."
   type        = string
-  description = "Azure Subscription ID"
-  default     = ""
 }
 
-variable "tenant_id" {
+variable "platform_name" {
+  description = "Platform Name: this will be used to name foundation things like Storage Account and Key Vault."
   type        = string
-  description = "Azure Tenant ID"
-  default     = ""
 }
 
 variable "region" {
-  type    = string
-  default = "centralus"
-}
-
-variable "resource_group_name" {
-  type = string
-}
-
-variable "key_vault_name" {
-  type = string
-}
-
-variable "storage_account_name" {
-  type = string
+  description = "Region to Create Platform Foundation Resources"
+  type        = string
+  default     = "centralus"
 }
 
 variable "platform_output_directory" {
-  type        = string
   description = "Platform Initialization Output Directory"
-}
-
-variable "azure_devops_service_principal" {
   type        = string
-  description = "AzureDevOps Service Principal"
-  default     = "01ddf773-9cdc-48d7-b42d-3597ce153730"
 }
