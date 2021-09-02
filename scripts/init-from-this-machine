@@ -24,6 +24,7 @@ export AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER="${AZURE_PLATFORM_FOUNDATION_ROOT
 export OUTPUT_FOLDER="${HOME}/.azure/${COMPANY_NAME?}/${PLATFORM_NAME?}"
 export RESOURCE_GROUP_NAME="${PLATFORM_NAME?}-foundation"
 export STORAGE_ACCOUNT_NAME="${COMPANY_NAME?}${PLATFORM_NAME?}" # This name must be unique within Azure Globally and needs to use only alphanumeric characters
+export KEY_VAULT_NAME="${COMPANY_NAME?}${PLATFORM_NAME?}" # This name must be unique within Azure Globally and needs to use only alphanumeric characters
 
 mkdir -p "${OUTPUT_FOLDER?}"
 

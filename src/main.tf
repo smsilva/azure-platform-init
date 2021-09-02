@@ -26,7 +26,7 @@ data "azurerm_resource_group" "foundation" {
 }
 
 resource "azurerm_key_vault" "foundation" {
-  name                       = "foundation"
+  name                       = var.key_vault_name
   location                   = data.azurerm_resource_group.foundation.location
   resource_group_name        = data.azurerm_resource_group.foundation.name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
@@ -34,46 +34,80 @@ resource "azurerm_key_vault" "foundation" {
   soft_delete_retention_days = 7
 }
 
-resource "azurerm_key_vault_access_policy" "foundation_terraform" {
-  key_vault_id = azurerm_key_vault.foundation.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = data.azurerm_client_config.current.object_id
+//resource "azurerm_key_vault_access_policy" "foundation_terraform" {
+//  key_vault_id = azurerm_key_vault.foundation.id
+//  tenant_id    = data.azurerm_client_config.current.tenant_id
+//  object_id    = data.azurerm_client_config.current.object_id
+//
+//  certificate_permissions = [
+//    "Backup",
+//    "Create",
+//    "Delete",
+//    "DeleteIssuers",
+//    "Get",
+//    "GetIssuers",
+//    "Import",
+//    "List",
+//    "ListIssuers",
+//    "ManageContacts",
+//    "ManageIssuers",
+//    "Purge",
+//    "Recover",
+//    "Restore",
+//    "SetIssuers",
+//    "Update",
+//  ]
+//
+//  key_permissions = [
+//    "Backup",
+//    "Create",
+//    "Decrypt",
+//    "Delete",
+//    "Encrypt",
+//    "Get",
+//    "Import",
+//    "List",
+//    "Purge",
+//    "Recover",
+//    "Restore",
+//    "Sign",
+//    "UnwrapKey",
+//    "Update",
+//    "Verify",
+//    "WrapKey",
+//  ]
+//
+//  secret_permissions = [
+//    "Backup",
+//    "Delete",
+//    "Get",
+//    "List",
+//    "Purge",
+//    "Recover",
+//    "Restore",
+//    "Set",
+//  ]
+//}
 
-  key_permissions = [
-    "List",
-    "Create",
-    "Get",
-  ]
+//resource "azurerm_key_vault_access_policy" "foundation_azure_devops" {
+//  key_vault_id = azurerm_key_vault.foundation.id
+//  tenant_id    = data.azurerm_client_config.current.tenant_id
+//  object_id    = var.azure_devops_service_principal
+//
+//  key_permissions = [
+//    "List",
+//    "Get",
+//  ]
+//
+//  secret_permissions = [
+//    "List",
+//    "Set",
+//    "Get"
+//  ]
+//}
 
-  secret_permissions = [
-    "List",
-    "Set",
-    "Get",
-    "Delete",
-    "Purge",
-    "Recover"
-  ]
-}
-
-resource "azurerm_key_vault_access_policy" "foundation_azure_devops" {
-  key_vault_id = azurerm_key_vault.foundation.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = var.azure_devops_service_principal
-
-  key_permissions = [
-    "List",
-    "Get",
-  ]
-
-  secret_permissions = [
-    "List",
-    "Set",
-    "Get",
-  ]
-}
-
-resource "azurerm_key_vault_secret" "foundation_storage_account" {
-  name         = "${var.storage_account_name}-storage-account"
-  value        = module.backend_storage.storage_account.primary_access_key
-  key_vault_id = azurerm_key_vault.foundation.id
-}
+//resource "azurerm_key_vault_secret" "foundation_storage_account" {
+//  key_vault_id = azurerm_key_vault.foundation.id
+//  name         = "${var.key_vault_name}-sa-primary-acces-key"
+//  value        = module.backend_storage.storage_account.primary_access_key
+//}
