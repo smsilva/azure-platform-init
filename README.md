@@ -7,7 +7,7 @@
 - Storage Container
 
 ```bash
-init-from-this-machine silvios mink
+azure-platform-init/scripts/init-from-this-machine silvios crow
 ```
 
 ## Importing Already Created Resources if needed
