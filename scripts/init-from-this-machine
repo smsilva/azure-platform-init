@@ -2,18 +2,18 @@
 
 set -e
 
+SCRIPTS_DIRECTORY="$(dirname "${0}")"
+export PATH=${SCRIPTS_DIRECTORY}:${PATH}
+
+show-terraform-client-info
+
 COMPANY_NAME="${1-silvios}"
 PLATFORM_NAME="${2}"
 PLATFORM_REGION="${3-centralus}"
 
-SCRIPTS_DIRECTORY="$(dirname "${0}")"
 SOURCE_DIRECTORY="${SCRIPTS_DIRECTORY}/../src"
 TEMPLATES_DIRECTORY="${SCRIPTS_DIRECTORY}/../templates"
 CREDENTIALS_DIRECTORY="${HOME}/.azure/${COMPANY_NAME}/${PLATFORM_NAME}" && mkdir -p "${CREDENTIALS_DIRECTORY?}"
-
-export PATH=${SCRIPTS_DIRECTORY}:${PATH}
-
-show-terraform-client-info
 
 if [ -z "${PLATFORM_NAME}" ]; then
   PLATFORM_NAME="$(get-a-random-animal-name)"
