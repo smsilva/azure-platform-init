@@ -1,0 +1,11 @@
+#!/bin/bash
+
+source bash-color-scheme
+
+echo "Platform Initialization"
+echo ""
+echo "  Company Name................: $(show_value "${COMPANY_NAME}")"
+echo "  Platform Name...............: $(show_value "${PLATFORM_NAME}")"
+echo "  Platform Region.............: $(show_value "${PLATFORM_REGION}")"
+echo "  Source Folder...............: $(show_file_status "${SOURCE_FOLDER}")"
+echo ""

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source bash-color-scheme
+
+echo "Terraform Client"
+echo ""
+echo "  Subscription................: $(show_value "${ARM_SUBSCRIPTION_ID}")"
+echo "  Tenant......................: $(show_value "${ARM_TENANT_ID}")"
+echo "  Service Principal...........: $(show_value "${ARM_CLIENT_ID}")"
+echo ""

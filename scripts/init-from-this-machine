@@ -2,71 +2,81 @@
 
 set -e
 
+COMPANY_NAME="${1-silvios}"
+PLATFORM_NAME="${2}"
+PLATFORM_REGION="${3-centralus}"
+
 SCRIPTS_DIRECTORY="$(dirname "${0}")"
+SOURCE_FOLDER="${SCRIPTS_DIRECTORY}/../src"
+TEMPLATES_FOLDER="${SCRIPTS_DIRECTORY}/../templates"
 
 export PATH=${SCRIPTS_DIRECTORY}:${PATH}
 
-COMPANY_NAME="${1-silvios}"
-PLATFORM_NAME="${2}"
-PLATFORM_FOUNDATION_REGION="${3-centralus}"
+show-terraform-client-info
 
 if [ -z "${PLATFORM_NAME}" ]; then
   PLATFORM_NAME="$(get-a-random-animal-name)"
 fi
 
-SOURCE_FOLDER="${SCRIPTS_DIRECTORY}/../src"
-TEMPLATES_FOLDER="${SCRIPTS_DIRECTORY}/../templates"
-
-export SOURCE_FOLDER
 export COMPANY_NAME
 export PLATFORM_NAME
+export PLATFORM_REGION
+export SOURCE_FOLDER
 export SCRIPTS_DIRECTORY
-export PLATFORM_FOUNDATION_REGION
-export AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER="${PWD}/${SCRIPTS_DIRECTORY}/../../azure-platform-foundation"
-export AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER="${AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER}/src"
-export OUTPUT_FOLDER="${HOME}/.azure/${COMPANY_NAME?}/${PLATFORM_NAME?}"
-export RESOURCE_GROUP_NAME="${PLATFORM_NAME?}-foundation"
-export STORAGE_ACCOUNT_NAME="${COMPANY_NAME?}${PLATFORM_NAME?}" # This name must be unique within Azure Globally and needs to use only alphanumeric characters
-export KEY_VAULT_NAME="${COMPANY_NAME?}${PLATFORM_NAME?}" # This name must be unique within Azure Globally and needs to use only alphanumeric characters
 
-mkdir -p "${OUTPUT_FOLDER?}"
+AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER="${PWD}/${SCRIPTS_DIRECTORY}/../../azure-platform-foundation"
+AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER="${AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER}/src"
+PLATFORM_BACKEND_FILE_NAME="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/backend.conf"
+PLATFORM_STORAGE_ACCOUNT_CREDENTIALS="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER?}/credentials.conf"
+PLATFORM_PROVIDER_FILE_NAME="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER?}/provider.tf"
 
-show-credentials
+export AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER
+export AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER
+export PLATFORM_BACKEND_FILE_NAME
+export PLATFORM_STORAGE_ACCOUNT_CREDENTIALS
+export PLATFORM_PROVIDER_FILE_NAME
+
+show-platform-initialization-info
 
 envsubst < "${TEMPLATES_FOLDER}/terraform.auto.tfvars.tpl" > "${SOURCE_FOLDER}/terraform.auto.tfvars"
 
-terraform -chdir="${SOURCE_FOLDER}" init -reconfigure
-terraform -chdir="${SOURCE_FOLDER}" apply -auto-approve
-
-# Retrieve Storage Account Name and Primary Access Key
-export ARM_STORAGE_ACCOUNT_NAME=$(            terraform -chdir=${SOURCE_FOLDER} output --raw platform_storage_account_name)
-export ARM_ACCESS_KEY=$(                      terraform -chdir=${SOURCE_FOLDER} output --raw platform_storage_account_primary_access_key)
-export PLATFORM_STORAGE_ACCOUNT_CREDENTIALS=$(terraform -chdir=${SOURCE_FOLDER} output --raw platform_storage_account_credentials)
-export PLATFORM_BACKEND_FILE_NAME=$(          terraform -chdir=${SOURCE_FOLDER} output --raw platform_backend_file_name)
-
-# Create a Credentials file on Output Folder
-# These Credentials should be put on a Safe Place (Azure Key Vault from here during creation?)
-envsubst < "${TEMPLATES_FOLDER}/credentials.conf" > "${OUTPUT_FOLDER?}/credentials.conf"
-
-# Change Backend from local to azurerm and copy to output folder
-sed '/backend.*local/ s/local/azurerm/' "${SOURCE_FOLDER}/provider.tf" > "${OUTPUT_FOLDER?}/provider.tf"
-
-show-credentials
-
-# Load Storage Account Name and Primary Access Key
-source "${PLATFORM_STORAGE_ACCOUNT_CREDENTIALS?}"
-
-terraform -chdir="${OUTPUT_FOLDER?}" init -backend-config="${PLATFORM_BACKEND_FILE_NAME?}"
-
-# Copy Generated Files to azure-platform-foundation
-cp "${OUTPUT_FOLDER?}/backend.conf" "${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/"
-cp "${OUTPUT_FOLDER?}/provider.tf" "${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/"
-
-envsubst < "${AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER?}/templates/terraform.auto.tfvars.tpl" > "${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/terraform.auto.tfvars"
-
 terraform \
-  -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}" init \
-  -backend-config="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/backend.conf" \
+  -chdir="${SOURCE_FOLDER}" init \
   -reconfigure
 
-terraform -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}" apply -auto-approve
+terraform \
+  -chdir="${SOURCE_FOLDER}" apply \
+  -auto-approve
+
+# Retrieve Output Values
+PLATFORM_RESOURCE_GROUP_NAME=$(               terraform -chdir="${SOURCE_FOLDER}" output --raw platform_resource_group_name)
+PLATFORM_STORAGE_ACCOUNT_NAME=$(              terraform -chdir="${SOURCE_FOLDER}" output --raw platform_storage_account_name)
+PLATFORM_STORAGE_ACCOUNT_CONTAINER_NAME=$(    terraform -chdir="${SOURCE_FOLDER}" output --raw platform_storage_account_container_name)
+PLATFORM_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY=$(terraform -chdir="${SOURCE_FOLDER}" output --raw platform_storage_account_primary_access_key)
+export PLATFORM_RESOURCE_GROUP_NAME
+export PLATFORM_STORAGE_ACCOUNT_NAME
+export PLATFORM_STORAGE_ACCOUNT_CONTAINER_NAME
+export PLATFORM_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY
+envsubst < "${TEMPLATES_FOLDER}/credentials.conf" > "${PLATFORM_STORAGE_ACCOUNT_CREDENTIALS?}"
+envsubst < "${TEMPLATES_FOLDER}/backend.conf" > "${PLATFORM_BACKEND_FILE_NAME?}"
+envsubst < "${AZURE_PLATFORM_FOUNDATION_ROOT_FOLDER?}/templates/terraform.auto.tfvars.tpl" > "${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}/terraform.auto.tfvars"
+
+# Change Backend from local to azurerm and copy to output folder
+sed '/backend.*local/ s/local/azurerm/' "${SOURCE_FOLDER}/provider.tf" > "${PLATFORM_PROVIDER_FILE_NAME?}"
+
+show-platform-foundation-info
+
+# Load Storage Account Name and Primary Access Key
+#  - ARM_STORAGE_ACCOUNT_NAME
+#  - ARM_ACCESS_KEY
+source "${PLATFORM_STORAGE_ACCOUNT_CREDENTIALS?}"
+
+# Inititalize Foundation Remote Backend
+terraform \
+  -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}" init \
+  -backend-config="${PLATFORM_BACKEND_FILE_NAME?}" \
+  -reconfigure
+
+terraform \
+  -chdir="${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}" apply \
+  -auto-approve

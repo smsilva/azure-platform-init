@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source bash-color-scheme
+
+echo "Platform Foundation Resources"
+echo ""
+echo "  Storage Account Name........: $(show_value "${ARM_STORAGE_ACCOUNT_NAME}")"
+echo "  Resource Group Name.........: $(show_value "${PLATFORM_RESOURCE_GROUP_NAME}")"
+echo "  Target Source Folder........: $(show_file_status "${AZURE_PLATFORM_FOUNDATION_SOURCE_FOLDER}")"
+echo "  Provider File...............: $(show_file_status "${PLATFORM_PROVIDER_FILE_NAME}")"
+echo "  Storage Account Parameters..: $(show_file_status "${PLATFORM_BACKEND_FILE_NAME}")"
+echo "  Storage Account Credentials.: $(show_file_status "${PLATFORM_STORAGE_ACCOUNT_CREDENTIALS}")"
+echo ""
