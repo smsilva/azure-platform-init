@@ -4,7 +4,6 @@ locals {
   resource_group_name  = "${var.platform_name}-foundation"
   key_vault_name       = "${var.company_name}${var.platform_name}"
   storage_account_name = "${var.company_name}${var.platform_name}"
-  output_directory     = "${var.platform_output_directory}/${var.company_name}/${var.platform_name}"
 }
 
 resource "azurerm_resource_group" "foundation" {
@@ -32,17 +31,5 @@ module "backend_storage" {
   depends_on = [
     azurerm_resource_group.foundation,
     module.vault
-  ]
-}
-
-module "terraform_backend_file" {
-  source = "../modules/backend-template"
-
-  backend            = module.backend_storage
-  key                = "foundation/state.json"
-  template_file_name = "${path.module}/../templates/backend.conf"
-  output_file_name   = "${local.output_directory}/backend.conf"
-  depends_on = [
-    module.backend_storage
   ]
 }
