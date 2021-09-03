@@ -8,7 +8,7 @@
 - Storage Container
 
 ```bash
-azure-platform-init/scripts/initialize-platform silvios walrus
+azure-platform-init/scripts/initialize-platform silvios wasp
 ```
 
 ## Purge Azure Key Vault Soft Deleted
