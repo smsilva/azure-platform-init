@@ -16,6 +16,7 @@ module "vault" {
 
   name           = local.key_vault_name
   resource_group = azurerm_resource_group.foundation
+
   depends_on = [
     azurerm_resource_group.foundation
   ]
@@ -28,6 +29,7 @@ module "backend_storage" {
   resource_group_name  = local.resource_group_name
   storage_account_name = local.storage_account_name
   key_vault_id         = module.vault.id
+
   depends_on = [
     azurerm_resource_group.foundation,
     module.vault

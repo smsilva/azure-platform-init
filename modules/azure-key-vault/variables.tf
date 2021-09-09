@@ -1,5 +1,5 @@
 variable "name" {
-  type = string
+  type        = string
   description = "Azure Key Vault Name"
 }
 
@@ -8,4 +8,5 @@ variable "resource_group" {
     name     = string
     location = string
   })
+  description = "Azure Key Vault Resource Group"
 }
