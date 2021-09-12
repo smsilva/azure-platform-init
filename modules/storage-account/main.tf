@@ -31,7 +31,7 @@ resource "azurerm_storage_container" "default" {
   ]
 }
 
-resource "azurerm_key_vault_secret" "foundation_storage_account" {
+resource "azurerm_key_vault_secret" "foundation_storage_account_primary_access_key" {
   key_vault_id = var.key_vault_id
   name         = "${azurerm_storage_account.default.name}-primary-acces-key"
   value        = azurerm_storage_account.default.primary_access_key

@@ -1,2 +1,2 @@
 company_name  = "silvios"
-platform_name = "bacurau"
+platform_name = "wasp"

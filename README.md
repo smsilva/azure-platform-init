@@ -13,7 +13,9 @@ azure-platform-init/scripts/initialize-platform silvios crow
 
 ## Purge Azure Key Vault Soft Deleted
 
-`WARNING: Running the script below will PURGE and PERMANENT DELETE any previously deleted Azure Key Vault on the actual Subscription. Be careful.`
+```
+WARNING: Running the script below will PURGE and PERMANENT DELETE any previously deleted Azure Key Vault on the actual Subscription. Be careful.
+```
 
 ```bash
 while read -r AZURE_KEY_VAULT_NAME; do
