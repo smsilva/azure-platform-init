@@ -1,8 +1,20 @@
 data "azurerm_client_config" "current" {}
 
+locals {
+  administrators = [
+    { "name" = "terraform", "id" = data.azurerm_client_config.current.object_id },
+    { "name" = "cloud_admins", "id" = "805a3d92-4178-4ad1-a0d6-70eae41a463a" }
+  ]
+
+  administrators_map = {
+    for administrator in local.administrators : administrator.name => administrator
+  }
+}
+
 resource "random_string" "key_vault_id" {
   keepers = {
-    name = var.name
+    name     = var.name
+    location = var.resource_group.location
   }
 
   length      = 3
@@ -22,9 +34,11 @@ resource "azurerm_key_vault" "default" {
 }
 
 resource "azurerm_key_vault_access_policy" "foundation_terraform_service_principal" {
+  for_each = local.administrators_map
+
   key_vault_id = azurerm_key_vault.default.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = data.azurerm_client_config.current.object_id
+  object_id    = each.value.id
 
   certificate_permissions = [
     "Backup",

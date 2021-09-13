@@ -51,10 +51,12 @@ terraform \
 
 # Retrieve Output Values
 PLATFORM_RESOURCE_GROUP_NAME=$(               terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_resource_group_name)
+PLATFORM_KEY_VAULT_NAME=$(                    terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_key_vault_name)
 PLATFORM_STORAGE_ACCOUNT_NAME=$(              terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_storage_account_name)
 PLATFORM_STORAGE_ACCOUNT_CONTAINER_NAME=$(    terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_storage_account_container_name)
 PLATFORM_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY=$(terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_storage_account_primary_access_key)
 export PLATFORM_RESOURCE_GROUP_NAME
+export PLATFORM_KEY_VAULT_NAME
 export PLATFORM_STORAGE_ACCOUNT_NAME
 export PLATFORM_STORAGE_ACCOUNT_CONTAINER_NAME
 export PLATFORM_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY
