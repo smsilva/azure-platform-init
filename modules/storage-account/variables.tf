@@ -4,13 +4,11 @@ variable "region" {
 }
 
 variable "resource_group_name" {
-  type    = string
-  default = "iac-temp"
+  type = string
 }
 
 variable "storage_account_name" {
-  type    = string
-  default = "silviosiac"
+  type = string
 }
 
 variable "container_name" {
@@ -18,6 +16,20 @@ variable "container_name" {
   default = "terraform"
 }
 
-variable "key_vault_id" {
-  type = string
+variable "account_tier" {
+  type        = string
+  description = "Storage Account Tier"
+  default     = "Standard"
+}
+
+variable "account_replication_type" {
+  type        = string
+  description = "Account Replication Type"
+  default     = "LRS"
+}
+
+variable "container_access_type" {
+  type        = string
+  description = "Container Access Type"
+  default     = "private"
 }
