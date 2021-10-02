@@ -12,8 +12,9 @@ variable "storage_account_name" {
 }
 
 variable "container_name" {
-  type    = string
-  default = "terraform"
+  type        = string
+  description = "Storage Container Name"
+  default     = "terraform"
 }
 
 variable "account_tier" {

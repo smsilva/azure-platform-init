@@ -8,7 +8,7 @@ export PATH=${SCRIPTS_DIRECTORY}:${PATH}
 show-terraform-client-info
 
 COMPANY_NAME="${1-silvios}"
-PLATFORM_NAME="${2}"
+PLATFORM_NAME="${2-wasp}"
 PLATFORM_REGION="${3-centralus}"
 
 SOURCE_DIRECTORY="${SCRIPTS_DIRECTORY}/../src"
@@ -55,11 +55,13 @@ PLATFORM_KEY_VAULT_NAME=$(                    terraform -chdir="${SOURCE_DIRECTO
 PLATFORM_STORAGE_ACCOUNT_NAME=$(              terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_storage_account_name)
 PLATFORM_STORAGE_ACCOUNT_CONTAINER_NAME=$(    terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_storage_account_container_name)
 PLATFORM_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY=$(terraform -chdir="${SOURCE_DIRECTORY}" output --raw platform_storage_account_primary_access_key)
+
 export PLATFORM_RESOURCE_GROUP_NAME
 export PLATFORM_KEY_VAULT_NAME
 export PLATFORM_STORAGE_ACCOUNT_NAME
 export PLATFORM_STORAGE_ACCOUNT_CONTAINER_NAME
 export PLATFORM_STORAGE_ACCOUNT_PRIMARY_ACCESS_KEY
+
 envsubst < "${TEMPLATES_DIRECTORY}/credentials.conf" > "${PLATFORM_STORAGE_ACCOUNT_CREDENTIALS?}"
 envsubst < "${TEMPLATES_DIRECTORY}/backend.conf" > "${PLATFORM_BACKEND_FILE_NAME?}"
 envsubst < "${AZURE_PLATFORM_FOUNDATION_ROOT_DIRECTORY?}/templates/terraform.auto.tfvars.tpl" > "${AZURE_PLATFORM_FOUNDATION_SOURCE_DIRECTORY}/terraform.auto.tfvars"
